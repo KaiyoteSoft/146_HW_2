@@ -1,0 +1,372 @@
+---
+title: "Homework 2"
+author: "YOUR NAME HERE"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+
+# Include your libraries here
+# Do not include lines used to install packages
+
+library(ggplot2)
+library(ggridges)
+library(car)
+library(abd)
+```
+### Objectives
+In this homework assignment, you will:
+
+1. Apply your plotting skills to visualize data before analysis
+2. Decide on an appropriate t-test and formulate statistical hypotheses
+3. Conduct t-tests and generate confidence intervals
+4. Interpret results
+5. Investigate the robustness of the two sample test using Type I errors
+6. Understand statistical power and Type II errors
+
+### Q1: Flycatcher patches (22 pts)
+
+#### (a. 1pt) Load the FlycatcherPatch dataset from the abd package and read the corresponding information in the help tab. Show the first six lines of the data.
+
+```{r}
+
+
+```
+
+
+#### (b. 5pts) Create an appropriate plot to visualize the data. Write one or two sentences describing the data.
+
+```{r}
+
+# Your plot here
+
+
+```
+
+[Your description here]
+
+#### (c. 2pts) Write the null and alternative hypotheses for a paired t-test for this dataset.
+
+[Your answer here]
+
+#### (d. 3pts) Conduct a paired t-test by first calculating the values needed to calculate the t value:
+(Hint: You will need to create a column of differences)
+
+```{r}
+
+# Replace "NULL" with the appropriate code
+
+mean_diff = NULL
+sd_diff = NULL
+se_diff = NULL
+
+```
+The mean difference is `r mean_diff`, the standard deviation is `r sd_diff`, and the standard error of the mean is `r se_diff`.
+
+
+#### (e. 2pts) Now calculate the t value and find the critical t value using the appropriate R function ($\frac{\alpha}{2}$=0.025)
+
+```{r}
+
+tval = NULL
+t_star= NULL
+
+```
+The t-value is `r tval` and t* is `r t_star`.
+
+#### (f. 1pt) What is your *two-sided* p-value?
+
+```{r}
+
+pval= NULL
+
+
+```
+
+My p-value is `r pval`.
+
+
+#### (g. 2pts) Conduct a paired test using the t.test function and compare to your calculations. Interpret the results of these tests by explaining whether or not you reject the null hypothesis.
+
+```{r}
+
+# Test code here
+
+
+```
+
+[Conclusion and interpretation here]
+
+
+#### (h. 2pts) What would be the null and alternative hypotheses for a two sample test?
+
+[Your answer here]
+
+
+#### (i. 2pts) Conduct a two-sample t-test using the t.test function and assuming equal variances. State your conclusions in terms of the null hypothesis. 
+
+```{r}
+
+# Test code here
+
+```
+
+[Conclusion and interpretation here]
+
+#### (j. 2pts) Explain the difference between a paired and two-sample test and which one is more appropriate for this dataset.
+
+[Your answer here]
+
+
+### Q2: Dominant hand vs/ weak hand dexterity  (18 pts)
+  
+#### Use the file with your dexterity results for this problem.
+https://docs.google.com/spreadsheets/d/1SrhY3qzY3fk_quT9HiRbT7kPuaWHUQEXMCycmmeihwg/edit#gid=0
+  
+#### Use a paired t-test to answer the following question:  *Does writing the phrase take a different amount of time with your weak v. dominant hand?* 
+  
+  
+#### (a. 2pts) Clearly state your null and alternative hypotheses of your paired t-test. 
+
+
+[Your answer here]
+
+
+#### (b. 3pts) Visualize your data in a meaningful way and describe what you are showing.
+
+
+```{r}
+
+# Plot code
+
+
+```
+
+[Description here]
+
+
+#### (c. 3pts) Determine if the data are normally distributed and, if not, whether you think the Central Limit Theorem will allow you to use a statistical test that assumes normality. Include both a Q-Qplot and a Shapiro Wilk statistic.
+
+  
+```{r}
+
+# Assumption testing code here
+
+```
+
+[Conclusions here]
+
+
+#### Regardless of whether you think the assumptions of the t-test hold, report the 95% confidence interval for the mean difference using the following steps:
+
+#### (d. 3pts) First, calculate this manually by finding the mean, sd, se, and t value
+
+```{r}
+
+# Replace NULL with appropriate code
+
+y_bar=NULL
+s=NULL
+se=NULL
+
+t_star=NULL
+
+```
+
+My mean is `r y_bar` and SE = `r se`. The critical t value is `r t_star`.
+
+
+#### (e. 2pts) Now calculate and report the interval:
+```{r}
+
+# Replace NULL with appropriate code
+
+lower= NULL
+upper= NULL
+
+```
+The 95% confidence interval for the mean difference in dexterity [INDICATE LEFT-RIGHT or RIGHT-LEFT] is [`r lower`,`r upper`].
+
+#### (f. 2pts) Find the 95% CI using the t.test function in R. Does it match your results?
+
+```{r}
+
+# Test code here
+
+```
+
+[Your answer here]
+
+#### (g. 3pts) Use the 95% CI to reject or fail to reject your null hypothesis. State your conclusions about the dominant v. weak hand dexterity.
+
+
+[Your answer here]
+
+
+### Q3: Natural selection in birds  (30 pts)
+  
+In 1898, Hermon Bumpus collected data on one of the first examples of natural selection directly observed in nature. Immediately following a bad winter storm, 136 English house sparrows were collected and brought indoors. Of these, 72 subsequently recovered, but 64 died :(. Bumpus made several measurements on all of the birds, and he was able to demonstrate strong natural selection on some of the traits as a result of this storm.  
+
+Bumpus published all of his data, and you can find them in the file *bumpus.csv*. In this problem, you will test whether the birds that survived or died (survival) differed in *total length* (total_length_mm).  
+  
+#### (a. 2pts) Clearly state your null and alternative hypotheses of your two-sample t-test.  
+
+[Your answer here]
+
+#### (b. 5pts) Visualize your data in some meaningful way, and explain what information you get from the visualization. 
+
+```{r}
+
+# Import data here
+
+# Plot code here
+
+```
+
+[Description here]
+
+#### (c. 2pts) What is the appropriate test you should use to compare mean body length between dying and surviving birds? Write the null and alternative hypotheses.
+
+[Your answer here]
+
+
+#### (d. 3pts) Are the data normal? Include the Shapiro-Wilk p-value and the Q-Qplot and explain how this influences your choice of statistical test.
+
+```{r}
+
+# Normality assumption code here
+
+```
+[Your answer here]
+
+
+#### (e. 3pts) Compare the F (var.test) and levene tests (in the car package) for testing unequal variances. Which one should you use for these data?
+
+```{r}
+
+# var.test and leveneTest here
+
+```
+
+[Your answer here]
+
+#### (f. 2pts) Conduct the appropriate t-test and state your conclusions in terms of the null hypothesis.
+
+```{r}
+
+# T-test code here
+
+```
+[Your answer here]
+
+#### (e. 10pts) Conduct your own statistical test on any other measurement in the dataset. Visualize the data, state your hypotheses, check assumptions, conduct your test, and report results. 
+
+```{r}
+
+# Plot code here
+
+```
+[Hypotheses here]
+
+```{r}
+
+# Assumption checks here
+
+
+```
+[Assumption discussion here]
+
+```{r}
+
+# Test code here
+
+```
+[Interpretation here]
+
+  
+### Q4: Robustness of the t-test (30pts)
+  
+The t-test is fairly robust to its assumptions. This means that even when the assumptions are not correct, the t-test often performs quite well. Remember that the two-sample t-test has the following assumptions:
+
+** The variables have a normal distribution in the populations
+
+** The variance of those distributions is the same in the two populations
+
+** The two samples are random samples.  
+  
+
+To get started on this exercise, open the script *robustness.R*. It should pop up in another tab in your R Studio console. This script allows you to test how robust the results of t-test are to data that violate the assumptions. First, specify what the true distributions look like. You can do this by altering the code in the top few lines of the script. 
+
+To start, run all the code in the script using *Run > Run all*. Two things should happen: 
+
+(1) you should see a plot pop up that shows you the shape of your two distributions, and 
+
+(2) R will output either your type I error if your true means are the same or your type II error if your true means are different. You should see something like:  
+  
+[1] "Your true TYPE I ERROR RATE is: 0.0498"  
+  
+This value should be close to 0.05 when the assumptions are met, which is our pre-set type I error $(\alpha = 0.05)$.  
+
+
+Here is what just happened: R just artificially created 5,000 samples of 5 individuals each from both populations, and ran 5000 t-tests comparing the means. It tallied the number of significant and non-significant t-tests. In this case, both distributions are normal and the variances are equal, just as assumed by the t-test. We expect the t-test to work quite well in this case.  
+
+Take a moment to think about what "working well" means. If the null hypothesis is true, then the Type 1 error rate given by the simulation should be close to our stated Type I error rate, $\alpha$. *Remember that Type I error is falsely rejecting a true null hypothesis*. An inflated Type I error rate means that we falsely reject the null hypothesis more than our pre-specified rate $\alpha$. 
+
+Answer the following questions as you explore the effect of distribution shape and sample size on your Type I error. You do NOT need to include any of the code from the script.
+  
+#### (a. 5pts) *Unequal standard deviation, equal sample size*.
+Make the standard deviations of the two populations unequal (all other parameters equal). What happens to the Type I error? Explore multiple combinations of standard deviations. What do you notice?
+
+[Your answer here]
+
+#### (b. 5pts) *Unequal standard deviation, unequal sample size*.
+Keep the standard devations unequal and increase the sample size of one of the populations. Now exchange sample size 1 and sample size 2. What do you notice?
+
+[Your answer here]
+
+#### (c. 5pts) *Skew, equal sample size*.
+Set the standard deviations of both populations to 1, the means of both populations to 4, and the sample size of both populations to 5. Change the skew of the second population to true (SKEWED2 = TRUE). 
+
+[Your answer here]
+
+##### What is your type I error rate?
+
+[Your answer here]
+
+##### What is the effect of changing the mean for both populations (still keeping them equal)?
+
+[Your answer here]
+
+##### What is the effect of increasing the sample size for the normal sample? What about the skewed sample? 
+
+[Your answer here]
+
+
+##### Play around with the sample sizes. Approximately how many samples are needed to attain a Type I error rate close to 0.05? (assume equal sample sizes)
+
+[Your answer here]
+
+#### (d. 5pts) Set the sample size = 25 for both populations, keeping means equal. Try two or three combinations that you think will give you an inflated Type I Error Rate. Do you think that the t-test is robust to violations of its assumptions if your sample size is large enough? Explain why or why not based on the value of your type I error rates.
+
+[Your answer here]
+
+
+#### (e. 5pts) Now set your sample means to be different from each other. Set sample 1 mean = 20 and sample 2 mean = 15. Assuming that SD for both samples is 3, how many samples are needed to get a type II error = 0.2?
+
+[Your answer here]
+
+
+#### (f. 2pts) What does this tell you about the power of your test?
+
+
+[Your answer here]
+
+
+#### (g. 3pts) Finally, keep the same parameters as in part E, but set the population with mean=15 to be skewed. What happened to your type II error? About how many samples are needed for each group (assume equal sample sizes) to reduce it to 0.2?
+
+[Your answer here]
+
+
+
