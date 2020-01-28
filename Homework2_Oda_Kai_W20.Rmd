@@ -1,12 +1,13 @@
 ---
 title: "Homework 2"
-author: "YOUR NAME HERE"
-date: ""
+author: "Kai Oda"
+date: "1/25/2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = F)
+knitr::opts_knit$set("~/Biology/146/Homework_2")
 
 # Include your libraries here
 # Do not include lines used to install packages
@@ -31,8 +32,19 @@ In this homework assignment, you will:
 #### (a. 1pt) Load the FlycatcherPatch dataset from the abd package and read the corresponding information in the help tab. Show the first six lines of the data.
 
 ```{r}
+FlycatcherPatch_data <- FlycatcherPatch
+FlycatcherPatch_data2 <- FlycatcherPatch
+names(FlycatcherPatch_data) = c("c", "void")
+names(FlycatcherPatch_data2) = c("void", "c")
 
+empty <- data.frame(year = c(rep("Year",60)), allData=c(rep("", 60)), stringsAsFactors = FALSE)
+empty <- rbind(FlycatcherPatch_data, FlycatcherPatch_data2)
+str(empty)
+empty$year[1:30] <- c("Year_1")
+empty$year[31:60] <- c("Year_2")
 
+# ?FlycatcherPatch
+head(FlycatcherPatch)
 ```
 
 
@@ -41,15 +53,18 @@ In this homework assignment, you will:
 ```{r}
 
 # Your plot here
-
-
+ggplot(empty, aes(x=year, y=c))+
+  geom_boxplot(aes(fill=year))+
+  ggtitle("Forehead Patch Size in Collared Flycatchers over two years")+
+  labs(x="Year", y="Forehead patch size (unknown units)")
 ```
 
-[Your description here]
+In year two flycatcher patch size had a higher median and was less variable compared to year one. However, it is difficult to tell if there was a significant different in patch size between the two years. 
 
 #### (c. 2pts) Write the null and alternative hypotheses for a paired t-test for this dataset.
 
-[Your answer here]
+Null Hypothesis: There is no difference in patch size between the two years. 
+Alternative hypothesis: There is a difference in patch size between the two years. 
 
 #### (d. 3pts) Conduct a paired t-test by first calculating the values needed to calculate the t value:
 (Hint: You will need to create a column of differences)
@@ -57,11 +72,10 @@ In this homework assignment, you will:
 ```{r}
 
 # Replace "NULL" with the appropriate code
-
-mean_diff = NULL
-sd_diff = NULL
-se_diff = NULL
-
+FlycatcherPatch$diff <- FlycatcherPatch$patch98 - FlycatcherPatch$patch99
+mean_diff = mean(FlycatcherPatch$diff)
+sd_diff = sd(FlycatcherPatch$diff)
+se_diff = sd_diff/length(FlycatcherPatch$diff)
 ```
 The mean difference is `r mean_diff`, the standard deviation is `r sd_diff`, and the standard error of the mean is `r se_diff`.
 
@@ -70,22 +84,22 @@ The mean difference is `r mean_diff`, the standard deviation is `r sd_diff`, and
 
 ```{r}
 
-tval = NULL
-t_star= NULL
+tval = (mean_diff - 0)/ (sd_diff/sqrt(length(FlycatcherPatch$diff)))
+t_star = qt(1-0.025, 29)
 
 ```
-The t-value is `r tval` and t* is `r t_star`.
+The t-value is `1.497` and t* is `2.045`.
 
 #### (f. 1pt) What is your *two-sided* p-value?
 
 ```{r}
 
-pval= NULL
+pval= 0.145
 
 
 ```
 
-My p-value is `r pval`.
+My p-value is `0.145`.
 
 
 #### (g. 2pts) Conduct a paired test using the t.test function and compare to your calculations. Interpret the results of these tests by explaining whether or not you reject the null hypothesis.
@@ -93,31 +107,34 @@ My p-value is `r pval`.
 ```{r}
 
 # Test code here
-
-
+tval = t.test(FlycatcherPatch$diff)
+t_star = qt(1-0.025, 29)
 ```
 
-[Conclusion and interpretation here]
-
+We cannot reject the null hypothesis that there is a difference in the forehead patch size of collared flycatchers between the two years. Since our calculated tval is less than the critical t_star value we cannot reject the null hypothesis (that there is no difference between the two years). 
 
 #### (h. 2pts) What would be the null and alternative hypotheses for a two sample test?
 
-[Your answer here]
+Null hypothesis - There is no significant difference of the categorical variable between two treatments. 
+Alternative hypothesis - There is a significant difference of the variable between twotreatments. 
 
 
 #### (i. 2pts) Conduct a two-sample t-test using the t.test function and assuming equal variances. State your conclusions in terms of the null hypothesis. 
 
 ```{r}
 
-# Test code here
+two_tval <- t.test(FlycatcherPatch$patch98, FlycatcherPatch$patch99, var.equal=TRUE)
 
 ```
 
-[Conclusion and interpretation here]
+Because the p value is greater than 0.05 we cannot reject the null hypothesis that there is no significant difference between the two years. 
 
 #### (j. 2pts) Explain the difference between a paired and two-sample test and which one is more appropriate for this dataset.
 
-[Your answer here]
+A paired t-test is used to compare the mean of the difference between non-independent subjects. In short, the paired t-test is a one sample t test on the difference between two samples. 
+A two-sample test is used to used to compare the difference of the means of two independent samples. 
+
+A paired t-test is most appropriate for this dataset, because the two samples have the same conditions for everything except the variable we are testing for — the difference in forehead patch across two separate years. Otherwise, the environment, sex and population size are all the same between the two populations. 
 
 
 ### Q2: Dominant hand vs/ weak hand dexterity  (18 pts)
@@ -130,8 +147,8 @@ https://docs.google.com/spreadsheets/d/1SrhY3qzY3fk_quT9HiRbT7kPuaWHUQEXMCycmmei
   
 #### (a. 2pts) Clearly state your null and alternative hypotheses of your paired t-test. 
 
-
-[Your answer here]
+Null hypothesis - There is no difference in writing time between one's weak vs. dominant hand. 
+Alternative hypothesis - Using one's weak vs. dominant hand has a significant effect on writing time. 
 
 
 #### (b. 3pts) Visualize your data in a meaningful way and describe what you are showing.
