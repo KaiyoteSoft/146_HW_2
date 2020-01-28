@@ -16,6 +16,8 @@ library(ggplot2)
 library(ggridges)
 library(car)
 library(abd)
+library(dplyr)
+library(tidyverse)
 ```
 ### Objectives
 In this homework assignment, you will:
@@ -59,12 +61,12 @@ ggplot(empty, aes(x=year, y=c))+
   labs(x="Year", y="Forehead patch size (unknown units)")
 ```
 
-In year two flycatcher patch size had a higher median and was less variable compared to year one. However, it is difficult to tell if there was a significant different in patch size between the two years. 
+In year two flycatcher patch size had a slightly higher median and was less variable compared to year one. However, it is difficult to tell if there was a significant difference in patch size between the two years. 
 
 #### (c. 2pts) Write the null and alternative hypotheses for a paired t-test for this dataset.
 
-Null Hypothesis: There is no difference in patch size between the two years. 
-Alternative hypothesis: There is a difference in patch size between the two years. 
+Null Hypothesis: There is no difference in the mean of the differences (the mean of the differences is equal to zero) between year one and year two. <br />
+Alternative hypothesis: There is a difference in the mean of differences between year one and year two. 
 
 #### (d. 3pts) Conduct a paired t-test by first calculating the values needed to calculate the t value:
 (Hint: You will need to create a column of differences)
@@ -75,7 +77,7 @@ Alternative hypothesis: There is a difference in patch size between the two year
 FlycatcherPatch$diff <- FlycatcherPatch$patch98 - FlycatcherPatch$patch99
 mean_diff = mean(FlycatcherPatch$diff)
 sd_diff = sd(FlycatcherPatch$diff)
-se_diff = sd_diff/length(FlycatcherPatch$diff)
+se_diff = sd_diff/sqrt(length(FlycatcherPatch$diff))
 ```
 The mean difference is `r mean_diff`, the standard deviation is `r sd_diff`, and the standard error of the mean is `r se_diff`.
 
@@ -115,8 +117,8 @@ We cannot reject the null hypothesis that there is a difference in the forehead 
 
 #### (h. 2pts) What would be the null and alternative hypotheses for a two sample test?
 
-Null hypothesis - There is no significant difference of the categorical variable between two treatments. 
-Alternative hypothesis - There is a significant difference of the variable between twotreatments. 
+Null hypothesis - There is no significant difference between the mean of forehead patches collected during the first year and the mean of the second year. <br />
+Alternative hypothesis - There is a significant difference in the mean of forehead patches collected between the two years. 
 
 
 #### (i. 2pts) Conduct a two-sample t-test using the t.test function and assuming equal variances. State your conclusions in terms of the null hypothesis. 
@@ -155,13 +157,25 @@ Alternative hypothesis - Using one's weak vs. dominant hand has a significant ef
 
 
 ```{r}
-
+dexterity <- read.csv("Dexterity_Data.csv")
+dexterity$X <- NULL
+dexterity$Name <- NULL
+dexterity$Handedness <- NULL
 # Plot code
+dexterity_data <- dexterity %>%
+  gather(key=Hand, Time, 1:2)
+
+# gather(dexterity, "Hand", "Time", 1:2)
+
+ggplot(dexterity_data, aes(x=Hand, y=Time))+
+  geom_boxplot(aes(fill=Hand))+
+  labs(x="Handedness", y="Time (sec)")+
+  ggtitle("Writing times using dominant vs. weak hands")
 
 
 ```
 
-[Description here]
+This graph shows that writing time is shorter when one uses their dominant hand compared to their weak hand. Additionally, the range of times that it takes to write with one's weak hand is greater when compared to the range of dominant hands. 
 
 
 #### (c. 3pts) Determine if the data are normally distributed and, if not, whether you think the Central Limit Theorem will allow you to use a statistical test that assumes normality. Include both a Q-Qplot and a Shapiro Wilk statistic.
@@ -170,10 +184,26 @@ Alternative hypothesis - Using one's weak vs. dominant hand has a significant ef
 ```{r}
 
 # Assumption testing code here
+qqPlot(dexterity$Weak)
+shapiro.test(dexterity$Weak)
+
+qqPlot(dexterity$Dominant)
+shapiro.test(dexterity$Dominant)
+
+mean_sample_weak = NULL 
+for (i in 1:10) {
+  temp_sample_weak <- sample(dexterity$Weak, 10)
+  mean_temp_weak <- mean(temp_sample_weak)
+  mean_sample_weak <- c(mean_sample_weak, mean_temp_weak)
+}
+
+qqPlot(mean_sample_weak)
+shapiro.test(mean_sample_weak)
 
 ```
 
-[Conclusions here]
+The data is not normally distributed. The qqPlot of the "weak" column shows data points that are outside of the confidence interval. Additionally, the shapiro-wilk test returns a p-value less than 0.05, which means that we reject the null hypothesis of the data being normally distributed. The shapiro test for the "dominant" column returns the same trend — we must reject the null hypothesis that the dexterity data is normally distributed. 
+However, by taking an increasing number of samples/sample sizes from the non-normal dataset and graphing the distribution of means we can approach a normal distribution. The shapiro test of a distribution of means returns a value greater than 0.05 and thus we cannot reject the null hypothesis that the data is normally distributed. 
 
 
 #### Regardless of whether you think the assumptions of the t-test hold, report the 95% confidence interval for the mean difference using the following steps:
@@ -183,16 +213,17 @@ Alternative hypothesis - Using one's weak vs. dominant hand has a significant ef
 ```{r}
 
 # Replace NULL with appropriate code
+dexterity$diff <- dexterity$Weak - dexterity$Dominant
 
-y_bar=NULL
-s=NULL
-se=NULL
+y_bar=mean(dexterity$diff)
+s=sd(dexterity$diff)
+se=s/sqrt(length(dexterity$diff))
 
-t_star=NULL
+t_star= qt(1-0.025, length(dexterity$diff)-1)
 
 ```
 
-My mean is `r y_bar` and SE = `r se`. The critical t value is `r t_star`.
+My mean is `10.07` and SE = `0.818`. The critical t value is `2.0345`.
 
 
 #### (e. 2pts) Now calculate and report the interval:
@@ -200,8 +231,8 @@ My mean is `r y_bar` and SE = `r se`. The critical t value is `r t_star`.
 
 # Replace NULL with appropriate code
 
-lower= NULL
-upper= NULL
+lower= y_bar - (t_star*se)
+upper= y_bar + (t_star*se)
 
 ```
 The 95% confidence interval for the mean difference in dexterity [INDICATE LEFT-RIGHT or RIGHT-LEFT] is [`r lower`,`r upper`].
@@ -211,6 +242,7 @@ The 95% confidence interval for the mean difference in dexterity [INDICATE LEFT-
 ```{r}
 
 # Test code here
+CI <- t.test(dexterity$diff)
 
 ```
 
