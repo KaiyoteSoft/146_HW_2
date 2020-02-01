@@ -45,6 +45,7 @@ str(empty)
 empty$year[1:30] <- c("Year_1")
 empty$year[31:60] <- c("Year_2")
 
+
 # ?FlycatcherPatch
 head(FlycatcherPatch)
 ```
@@ -59,14 +60,26 @@ ggplot(empty, aes(x=year, y=c))+
   geom_boxplot(aes(fill=year))+
   ggtitle("Forehead Patch Size in Collared Flycatchers over two years")+
   labs(x="Year", y="Forehead patch size (unknown units)")
+
+ggplot(FlycatcherPatch_data, aes(x=c))+
+  geom_histogram(binwidth=0.8, fill="white", color="black")+
+  labs(x="Distribution of patch sizes in year one")+
+  ggtitle("Distribution of patch sizes in year one")+
+  theme_bw()
+
+ggplot(FlycatcherPatch_data, aes(x=void))+
+  geom_histogram(binwidth=0.8, fill="white", color="black")+
+  labs(x="Distribution of patch sizes in year two")+
+  ggtitle("Year two: Distribution of patch sizes")+
+  theme_bw()
 ```
 
-In year two flycatcher patch size had a slightly higher median and was less variable compared to year one. However, it is difficult to tell if there was a significant difference in patch size between the two years. 
+In year two flycatcher patch size had a slightly higher median and was less variable compared to year one. This trend is shown in the set of histograms — year one patch size is right skewed while year two patch sizes appear more normally distributed. However, it is difficult to tell if there was a significant difference in patch size between the two years. 
 
 #### (c. 2pts) Write the null and alternative hypotheses for a paired t-test for this dataset.
 
-Null Hypothesis: There is no difference in the mean of the differences (the mean of the differences is equal to zero) between year one and year two. <br />
-Alternative hypothesis: There is a difference in the mean of differences between year one and year two. 
+**Null Hypothesis:** There is no difference in the mean of the differences (the mean of the differences is equal to zero) between year one and year two for forehead patch size. <br />
+**Alternative hypothesis:** There is a difference in the mean of differences between year one and year two for forehead patch size. 
 
 #### (d. 3pts) Conduct a paired t-test by first calculating the values needed to calculate the t value:
 (Hint: You will need to create a column of differences)
@@ -79,7 +92,7 @@ mean_diff = mean(FlycatcherPatch$diff)
 sd_diff = sd(FlycatcherPatch$diff)
 se_diff = sd_diff/sqrt(length(FlycatcherPatch$diff))
 ```
-The mean difference is `r mean_diff`, the standard deviation is `r sd_diff`, and the standard error of the mean is `r se_diff`.
+The mean difference is **`r mean_diff`**, the standard deviation is **`r sd_diff`**, and the standard error of the mean is **`r se_diff`**.
 
 
 #### (e. 2pts) Now calculate the t value and find the critical t value using the appropriate R function ($\frac{\alpha}{2}$=0.025)
@@ -113,11 +126,11 @@ tval = t.test(FlycatcherPatch$diff)
 t_star = qt(1-0.025, 29)
 ```
 
-We cannot reject the null hypothesis that there is a difference in the forehead patch size of collared flycatchers between the two years. Since our calculated tval is less than the critical t_star value we cannot reject the null hypothesis (that there is no difference between the two years). 
+We cannot reject the null hypothesis the mean of differences between forehead patch size over two years is equal to zero. Since our calculated tval is less extreme than the critical t_star value we cannot reject the null hypothesis. 
 
 #### (h. 2pts) What would be the null and alternative hypotheses for a two sample test?
 
-Null hypothesis - There is no significant difference between the mean of forehead patches collected during the first year and the mean of the second year. <br />
+Null hypothesis - There is no difference between the mean of forehead patches collected during the first year and the mean of the second year. <br />
 Alternative hypothesis - There is a significant difference in the mean of forehead patches collected between the two years. 
 
 
@@ -129,7 +142,7 @@ two_tval <- t.test(FlycatcherPatch$patch98, FlycatcherPatch$patch99, var.equal=T
 
 ```
 
-Because the p value is greater than 0.05 we cannot reject the null hypothesis that there is no significant difference between the two years. 
+Because the p value is greater than 0.05 we cannot reject the null hypothesis that the difference of the means for year one and two is equal to zero. 
 
 #### (j. 2pts) Explain the difference between a paired and two-sample test and which one is more appropriate for this dataset.
 
@@ -149,23 +162,20 @@ https://docs.google.com/spreadsheets/d/1SrhY3qzY3fk_quT9HiRbT7kPuaWHUQEXMCycmmei
   
 #### (a. 2pts) Clearly state your null and alternative hypotheses of your paired t-test. 
 
-Null hypothesis - There is no difference in writing time between one's weak vs. dominant hand. 
-Alternative hypothesis - Using one's weak vs. dominant hand has a significant effect on writing time. 
-
+Null hypothesis - The mean of differences in writing time between one's weak vs. dominant hand is equal to zero. <br>
+Alternative hypothesis - The mean of differences in writing time between one's weak vs. dominant hand is **not** equal to zero. 
 
 #### (b. 3pts) Visualize your data in a meaningful way and describe what you are showing.
 
 
 ```{r}
 dexterity <- read.csv("Dexterity_Data.csv")
-dexterity$X <- NULL
 dexterity$Name <- NULL
-dexterity$Handedness <- NULL
+
 # Plot code
 dexterity_data <- dexterity %>%
   gather(key=Hand, Time, 1:2)
 
-# gather(dexterity, "Hand", "Time", 1:2)
 
 ggplot(dexterity_data, aes(x=Hand, y=Time))+
   geom_boxplot(aes(fill=Hand))+
@@ -184,15 +194,15 @@ This graph shows that writing time is shorter when one uses their dominant hand 
 ```{r}
 
 # Assumption testing code here
-qqPlot(dexterity$Weak)
-shapiro.test(dexterity$Weak)
+qqPlot(dexterity$weak, main="qqPlot for weak hand")
+shapiro.test(dexterity$weak)
 
-qqPlot(dexterity$Dominant)
-shapiro.test(dexterity$Dominant)
+qqPlot(dexterity$dominant, main="qqPlot for dominant hand")
+shapiro.test(dexterity$dominant)
 
 mean_sample_weak = NULL 
 for (i in 1:10) {
-  temp_sample_weak <- sample(dexterity$Weak, 10)
+  temp_sample_weak <- sample(dexterity$weak, 10)
   mean_temp_weak <- mean(temp_sample_weak)
   mean_sample_weak <- c(mean_sample_weak, mean_temp_weak)
 }
@@ -202,7 +212,7 @@ shapiro.test(mean_sample_weak)
 
 ```
 
-The data is not normally distributed. The qqPlot of the "weak" column shows data points that are outside of the confidence interval. Additionally, the shapiro-wilk test returns a p-value less than 0.05, which means that we reject the null hypothesis of the data being normally distributed. The shapiro test for the "dominant" column returns the same trend — we must reject the null hypothesis that the dexterity data is normally distributed. 
+The data is not normally distributed. The qqPlot of the "weak" column shows data points that are outside of the confidence interval. Additionally, the shapiro-wilk test returns a p-value less than 0.05, which means that we reject the null hypothesis of the data being normally distributed. The shapiro test for the "dominant" column returns the same trend — we must reject the null hypothesis that the data is normally distributed for writing times with the dominant hand. <br> 
 However, by taking an increasing number of samples/sample sizes from the non-normal dataset and graphing the distribution of means we can approach a normal distribution. The shapiro test of a distribution of means returns a value greater than 0.05 and thus we cannot reject the null hypothesis that the data is normally distributed. 
 
 
@@ -213,7 +223,7 @@ However, by taking an increasing number of samples/sample sizes from the non-nor
 ```{r}
 
 # Replace NULL with appropriate code
-dexterity$diff <- dexterity$Weak - dexterity$Dominant
+dexterity$diff <- dexterity$weak - dexterity$dominant
 
 y_bar=mean(dexterity$diff)
 s=sd(dexterity$diff)
@@ -246,12 +256,12 @@ CI <- t.test(dexterity$diff)
 
 ```
 
-[Your answer here]
+The test **does** match my results, returning a confidence interval of [9.85, 11.73]
 
 #### (g. 3pts) Use the 95% CI to reject or fail to reject your null hypothesis. State your conclusions about the dominant v. weak hand dexterity.
 
 
-[Your answer here]
+The mean of differences is equal to 10.07 which is within the confidence interval of [9.85, 11.73]. Therefore, we cannot reject the null hypothesis that the mean of differences between left and right hand writing times is equal to zero? 
 
 
 ### Q3: Natural selection in birds  (30 pts)
@@ -262,23 +272,32 @@ Bumpus published all of his data, and you can find them in the file *bumpus.csv*
   
 #### (a. 2pts) Clearly state your null and alternative hypotheses of your two-sample t-test.  
 
-[Your answer here]
+**Null hypothesis:** There is no difference in the mean total length between birds that survived the winter storm and those that died. <br>
+**Alternative hypothesis:** There *is* a difference in the mean total length between birds that survived the winter storm and those that perished.
 
 #### (b. 5pts) Visualize your data in some meaningful way, and explain what information you get from the visualization. 
 
 ```{r}
 
 # Import data here
-
+bumpus <- read.csv("bumpus.csv")
 # Plot code here
+ggplot(bumpus, aes(x=total_length_mm))+
+  geom_histogram(binwidth = 1, color="black", fill="white")+
+  labs(x="Total length (mm)")+
+  ggtitle("Histrogram of total length for house sparrows")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5))
 
 ```
 
-[Description here]
+From the histogram the total length of the birds appears to be relatively normally distributed (no strong right/left skew in the data). However, a qqPlot/shapiro test would be needed to confirm normality. However, assuming the data is normally distributed we can move forward with a two-sample t test. 
 
 #### (c. 2pts) What is the appropriate test you should use to compare mean body length between dying and surviving birds? Write the null and alternative hypotheses.
 
-[Your answer here]
+The appropriate test is a **two-sample t test** <br>
+**Null hypothesis:** There is no difference in the mean total length for birds that survived and those that perished. <br>
+**Alternative hypothesis:** There is a difference in the mean total length for birds that survived and those that died. 
 
 
 #### (d. 3pts) Are the data normal? Include the Shapiro-Wilk p-value and the Q-Qplot and explain how this influences your choice of statistical test.
@@ -286,9 +305,15 @@ Bumpus published all of his data, and you can find them in the file *bumpus.csv*
 ```{r}
 
 # Normality assumption code here
+with(bumpus, qqPlot(total_length_mm[survival=="yes"], main="qqPlot for birds that survived"), dist="norm", id="t")
+with(bumpus, qqPlot(total_length_mm[survival=="no"], main="qqPlot for birds that perished"), dist="norm", id="t")
+
+with(bumpus, shapiro.test(total_length_mm[survival=="yes"]))
+with(bumpus, shapiro.test(total_length_mm[survival=="no"]))
 
 ```
-[Your answer here]
+The shapiro test shows that the data for the birds that survived is normal (p value > 0.05, cannot reject the null hypothesis that the data is normal). <br>
+However, the data is not normal for the birds that died as the pvalue is < 0.05. Thus, we are forced to reject the null hypothesis that the data is normal. 
 
 
 #### (e. 3pts) Compare the F (var.test) and levene tests (in the car package) for testing unequal variances. Which one should you use for these data?
@@ -296,43 +321,69 @@ Bumpus published all of his data, and you can find them in the file *bumpus.csv*
 ```{r}
 
 # var.test and leveneTest here
-
+# ?subset
+bumpus_survive <- subset(bumpus, survival=="yes")
+bumpus_DIE <- subset(bumpus, survival=="no")
+var.test(bumpus_survive$total_length_mm, bumpus_DIE$total_length_mm)
+leveneTest(bumpus$total_length_mm, bumpus$survival)
 ```
 
-[Your answer here]
+The null hypothesis for the F test is that the ratio of variances is equal to one. This occurs when the variances of the two samples are equal. <br> 
+The null hypothesis for the Levene test is that the variances are equal. <br>
+In this case, since the P value the F test and Levene test was greater than 0.05, we cannot reject the null hypothesis (variance between total length of alive/dead birds is equal). Therefore, we can use a t test instead of a Welch's t-test. 
 
 #### (f. 2pts) Conduct the appropriate t-test and state your conclusions in terms of the null hypothesis.
 
 ```{r}
 
 # T-test code here
+t.test(bumpus_survive$total_length_mm, bumpus_DIE$total_length_mm, var.equal=TRUE)
 
 ```
-[Your answer here]
+Since the p value is less than 0.05 we reject the null hypothesis that there is no difference in mean total length between birds that survived and those that died. <br> 
+Therefore, there we accept the alternative hypothesis that **there is a difference in mean total length** between birds that survived and those that perished. 
 
 #### (e. 10pts) Conduct your own statistical test on any other measurement in the dataset. Visualize the data, state your hypotheses, check assumptions, conduct your test, and report results. 
 
 ```{r}
 
 # Plot code here
+ggplot(bumpus, aes(x=weight_g))+
+  geom_histogram(fill="white", color="black", binwidth=1)+
+  ggtitle("Histogram for weight of birds")+
+  labs(x="Weight (g)")+
+    theme_bw()+
+  theme(plot.title = element_text(hjust=0.5))
+
 
 ```
-[Hypotheses here]
+Null hypothesis: The mean weight of birds that survived and those that died is the same. <br>
+Alternative hypothesis: The mean weight of birds that survived and those that died is **different.**
 
 ```{r}
 
+with(bumpus, qqPlot(bumpus$weight_g[survival=="yes"], main="qqPlot for birds that survived"), dist="norm", id="t")
+with(bumpus, shapiro.test(weight_g[survival=="yes"]))
+
+with(bumpus, qqPlot(bumpus$weight_g[survival=="no"], main="qqPlot for birds that perished"), dist="norm", id="t")
+with(bumpus, shapiro.test(weight_g[survival=="no"]))
+
 # Assumption checks here
+leveneTest(bumpus$weight_g, bumpus$survival)
 
 
 ```
-[Assumption discussion here]
+Normally distributed: The weight of birds that survived is normally distributed. However, the weight of birds that did not survive is not normally distributed. However, we are still going to forge ahead keeping in mind the power of our test is reduced because one of the assumptions is not met. <br>
+Variance: Because the p value is greater than 0.05 we cannot reject the null hypothesis. Therefore, the variances are equal and we can move forward with the t test. 
 
 ```{r}
 
 # Test code here
+t.test(bumpus_survive$weight_g, bumpus_DIE$weight_g, var.equal=TRUE)
 
 ```
-[Interpretation here]
+Since the p value is less than 0.05 we reject our null hypothesis that the mean weights of birds that died and those that survived are equal. <br> 
+Therefore, we accept the alternative hypothesis that there is a difference between the weight of birds that survived and those that died. 
 
   
 ### Q4: Robustness of the t-test (30pts)
@@ -368,54 +419,60 @@ Answer the following questions as you explore the effect of distribution shape a
 #### (a. 5pts) *Unequal standard deviation, equal sample size*.
 Make the standard deviations of the two populations unequal (all other parameters equal). What happens to the Type I error? Explore multiple combinations of standard deviations. What do you notice?
 
-[Your answer here]
+The shape of the two populations appears to vary dramatically, but both still appear more or less normal. The Type I error increased slightly (0.05 to 0.08), but this is not an alarming increase considering the samples are generated randomly. <br>
+Changing combinations of standard deviations does not increase the p value, the t test still appears to work well. 
 
 #### (b. 5pts) *Unequal standard deviation, unequal sample size*.
 Keep the standard devations unequal and increase the sample size of one of the populations. Now exchange sample size 1 and sample size 2. What do you notice?
 
-[Your answer here]
+As the sample size increases, the Type I error rate remains zero (despite a very large difference between the size of the samples). <br> 
+Exchanging the sample size of population 1 and 2 increased the error rate to 0.825. 
 
 #### (c. 5pts) *Skew, equal sample size*.
 Set the standard deviations of both populations to 1, the means of both populations to 4, and the sample size of both populations to 5. Change the skew of the second population to true (SKEWED2 = TRUE). 
 
-[Your answer here]
+The shape of population two is right skewed while population one remains normally distributed. 
 
 ##### What is your type I error rate?
 
-[Your answer here]
+0.125
 
 ##### What is the effect of changing the mean for both populations (still keeping them equal)?
 
-[Your answer here]
+Increasing the means results in a flatter looking curve, though the population two still appears to be right skewed. The Type I error rate increased to 0.155. 
 
 ##### What is the effect of increasing the sample size for the normal sample? What about the skewed sample? 
 
-[Your answer here]
+Increasing the sample size of the normal sample had no effect on the shape of the curve, but the Type I error rate increased dramatically (0.059). <br>
+Increasing the sample size of the skewed sample had no effect on the shape of the curve, but the Type I error rate **decreased** dramatically (fell to zero). 
 
 
 ##### Play around with the sample sizes. Approximately how many samples are needed to attain a Type I error rate close to 0.05? (assume equal sample sizes)
 
-[Your answer here]
+A sample size of 120 returned a Type I error rate of 0.057. 
 
 #### (d. 5pts) Set the sample size = 25 for both populations, keeping means equal. Try two or three combinations that you think will give you an inflated Type I Error Rate. Do you think that the t-test is robust to violations of its assumptions if your sample size is large enough? Explain why or why not based on the value of your type I error rates.
 
-[Your answer here]
+I tried changing both populations to be skewed --> Error = 0.0466
+Tried making the SD of the normal population extremely large --> 0.0558
+Tried making the SD of the skewed population extremely large --> 0.081
+
+Based on the above results, I could not find a way to generate a large type I error rate if the means and sample sizes are the same. Therefore, if the sample size is large enough it appears that the t test is robust to violations (assuming the sample sizes are the same). 
 
 
 #### (e. 5pts) Now set your sample means to be different from each other. Set sample 1 mean = 20 and sample 2 mean = 15. Assuming that SD for both samples is 3, how many samples are needed to get a type II error = 0.2?
 
-[Your answer here]
-
+7 samples were required to return a type II error of 0.177. 
 
 #### (f. 2pts) What does this tell you about the power of your test?
 
 
-[Your answer here]
+Few samples are required in order to maintain the same level of power (be able to correly reject a false null hypothesis) if the means are different. Our test has high power. 
 
 
 #### (g. 3pts) Finally, keep the same parameters as in part E, but set the population with mean=15 to be skewed. What happened to your type II error? About how many samples are needed for each group (assume equal sample sizes) to reduce it to 0.2?
 
-[Your answer here]
+The tyep II error dramatically increased when population 2 was set to skewed (0.7). 85 samples were required to return a type II error of 0.19
 
 
 
