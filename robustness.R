@@ -5,14 +5,14 @@
 ## POPULATION 1
 MEAN1 = 20  # Mean of population 1, should be positive!
 SD1 = 3 # Standard deviation of population 1
-SAMPLE_SIZE1 = 25  # Number of samples you are drawing from the population
+SAMPLE_SIZE1 = 7  # Number of samples you are drawing from the population
 SKEWED1 = FALSE  # Either TRUE or FALSE
 
 ## POPULATION 2
 MEAN2 = 15  # Mean of population 2, should be positive!
 SD2 = 3  # Standard deviation of population 2
-SAMPLE_SIZE2 = 25  # Number of samples you are drawing from the population
-SKEWED2 = TRUE  # Either TRUE or FALSE
+SAMPLE_SIZE2 = 7  # Number of samples you are drawing from the population
+SKEWED2 = FALSE  # Either TRUE or FALSE
 
 ### DO NOT ENTER ANYTHING BELOW THIS LINE
 #############################################################

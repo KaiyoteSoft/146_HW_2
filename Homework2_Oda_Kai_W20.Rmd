@@ -59,6 +59,7 @@ head(FlycatcherPatch)
 ggplot(empty, aes(x=year, y=c))+
   geom_boxplot(aes(fill=year))+
   ggtitle("Forehead Patch Size in Collared Flycatchers over two years")+
+  geom_point(aes(y=c))
   labs(x="Year", y="Forehead patch size (unknown units)")
 
 ggplot(FlycatcherPatch_data, aes(x=c))+
@@ -79,7 +80,7 @@ In year two flycatcher patch size had a slightly higher median and was less vari
 #### (c. 2pts) Write the null and alternative hypotheses for a paired t-test for this dataset.
 
 **Null Hypothesis:** There is no difference in the mean of the differences (the mean of the differences is equal to zero) between year one and year two for forehead patch size. <br />
-**Alternative hypothesis:** There is a difference in the mean of differences between year one and year two for forehead patch size. 
+**Alternative hypothesis:** There is a difference in the mean of differences between year one and year two for forehead patch size. The mean of the differences is not zero. 
 
 #### (d. 3pts) Conduct a paired t-test by first calculating the values needed to calculate the t value:
 (Hint: You will need to create a column of differences)
@@ -212,8 +213,8 @@ shapiro.test(mean_sample_weak)
 
 ```
 
-The data is not normally distributed. The qqPlot of the "weak" column shows data points that are outside of the confidence interval. Additionally, the shapiro-wilk test returns a p-value less than 0.05, which means that we reject the null hypothesis of the data being normally distributed. The shapiro test for the "dominant" column returns the same trend — we must reject the null hypothesis that the data is normally distributed for writing times with the dominant hand. <br> 
-However, by taking an increasing number of samples/sample sizes from the non-normal dataset and graphing the distribution of means we can approach a normal distribution. The shapiro test of a distribution of means returns a value greater than 0.05 and thus we cannot reject the null hypothesis that the data is normally distributed. 
+The data __is__ normally distributed. The qqPlot of the "weak" column shows that data points are inside of the confidence interval. Additionally, the shapiro-wilk test returns a p-value greater than 0.05, which means that we __cannot__ reject the null hypothesis of the data being normally distributed. The shapiro test for the "dominant" column returns the same trend — we cannot reject the null hypothesis that the data is normally distributed for writing times with the dominant hand. <br> 
+However, if the data was not normally distributed by taking an increasing number of samples/sample sizes from the non-normal dataset and graphing the distribution of means we can approach a normal distribution.  
 
 
 #### Regardless of whether you think the assumptions of the t-test hold, report the 95% confidence interval for the mean difference using the following steps:
@@ -233,7 +234,7 @@ t_star= qt(1-0.025, length(dexterity$diff)-1)
 
 ```
 
-My mean is `10.07` and SE = `0.818`. The critical t value is `2.0345`.
+My mean is `10.79` and SE = `0.461`. The critical t value is `2.0345`.
 
 
 #### (e. 2pts) Now calculate and report the interval:
@@ -245,7 +246,7 @@ lower= y_bar - (t_star*se)
 upper= y_bar + (t_star*se)
 
 ```
-The 95% confidence interval for the mean difference in dexterity [INDICATE LEFT-RIGHT or RIGHT-LEFT] is [`r lower`,`r upper`].
+The 95% confidence interval for the mean difference in dexterity [LEFT-RIGHT] is [`r lower`,`r upper`].
 
 #### (f. 2pts) Find the 95% CI using the t.test function in R. Does it match your results?
 
@@ -260,8 +261,9 @@ The test **does** match my results, returning a confidence interval of [9.85, 11
 
 #### (g. 3pts) Use the 95% CI to reject or fail to reject your null hypothesis. State your conclusions about the dominant v. weak hand dexterity.
 
-
-The mean of differences is equal to 10.07 which is within the confidence interval of [9.85, 11.73]. Therefore, we cannot reject the null hypothesis that the mean of differences between left and right hand writing times is equal to zero? 
+Our null hypothesis is that the mean of differences in writing time between the left and right hand is equal to zero. 
+The confidence interval of [9.85, 11.73] does not include the null hypothesis. Therefore, we __can__ reject the null hypothesis that the mean of differences between left and right hand writing times is equal to zero. <br>
+Conclusion: The mean of differences in writing time between left and right hands is __not__ equal to zero. 
 
 
 ### Q3: Natural selection in birds  (30 pts)
@@ -288,6 +290,12 @@ ggplot(bumpus, aes(x=total_length_mm))+
   ggtitle("Histrogram of total length for house sparrows")+
   theme_bw()+
   theme(plot.title = element_text(hjust=0.5))
+
+ggplot(bumpus, aes(total_length_mm, survival))+
+  geom_density_ridges()+
+  geom_density_ridges(aes(fill=survival))+
+  labs(x="total length (mm)", y="survival")+
+  ggtitle("Survial vs total length (mm)")
 
 ```
 
@@ -330,7 +338,8 @@ leveneTest(bumpus$total_length_mm, bumpus$survival)
 
 The null hypothesis for the F test is that the ratio of variances is equal to one. This occurs when the variances of the two samples are equal. <br> 
 The null hypothesis for the Levene test is that the variances are equal. <br>
-In this case, since the P value the F test and Levene test was greater than 0.05, we cannot reject the null hypothesis (variance between total length of alive/dead birds is equal). Therefore, we can use a t test instead of a Welch's t-test. 
+In this case, since the P value the F test and Levene test was greater than 0.05, we cannot reject the null hypothesis (variance between total length of alive/dead birds is equal). However, since the F test is sensitive to data that is not normally distributed (and birds that perished are not normally distributed), I decided to use the Levene's test. <br>
+But to reiterate, we __cannot__ reject the null hypothesis that the variances are equal with the Levene test. Therefore, we can use a t test instead of a Welch's t-test. 
 
 #### (f. 2pts) Conduct the appropriate t-test and state your conclusions in terms of the null hypothesis.
 
@@ -341,7 +350,7 @@ t.test(bumpus_survive$total_length_mm, bumpus_DIE$total_length_mm, var.equal=TRU
 
 ```
 Since the p value is less than 0.05 we reject the null hypothesis that there is no difference in mean total length between birds that survived and those that died. <br> 
-Therefore, there we accept the alternative hypothesis that **there is a difference in mean total length** between birds that survived and those that perished. 
+Therefore,  we accept the alternative hypothesis that **there is a difference in mean total length** between birds that survived and those that perished. 
 
 #### (e. 10pts) Conduct your own statistical test on any other measurement in the dataset. Visualize the data, state your hypotheses, check assumptions, conduct your test, and report results. 
 
@@ -357,8 +366,10 @@ ggplot(bumpus, aes(x=weight_g))+
 
 
 ```
-Null hypothesis: The mean weight of birds that survived and those that died is the same. <br>
-Alternative hypothesis: The mean weight of birds that survived and those that died is **different.**
+<br>
+**Null hypothesis:** The mean weight of birds that survived and those that died is the same. <br>
+**Alternative hypothesis:** The mean weight of birds that survived and those that died is **different.**<br>
+**Tests for normality**
 
 ```{r}
 
@@ -373,8 +384,11 @@ leveneTest(bumpus$weight_g, bumpus$survival)
 
 
 ```
-Normally distributed: The weight of birds that survived is normally distributed. However, the weight of birds that did not survive is not normally distributed. However, we are still going to forge ahead keeping in mind the power of our test is reduced because one of the assumptions is not met. <br>
-Variance: Because the p value is greater than 0.05 we cannot reject the null hypothesis. Therefore, the variances are equal and we can move forward with the t test. 
+<br>
+**Normally distributed:** The weight of birds that survived is normally distributed. However, the weight of birds that did not survive is not normally distributed. However, we are still going to forge ahead keeping in mind the power of our test is reduced because one of the assumptions is not met. <br>
+**Variance:** Because the p value is greater than 0.05 we cannot reject the null hypothesis. Therefore, the variances are equal and we can move forward with the t test. 
+<br>
+## T-test for weight of alive/perished birds
 
 ```{r}
 
@@ -426,7 +440,7 @@ Changing combinations of standard deviations does not increase the p value, the 
 Keep the standard devations unequal and increase the sample size of one of the populations. Now exchange sample size 1 and sample size 2. What do you notice?
 
 As the sample size increases, the Type I error rate remains zero (despite a very large difference between the size of the samples). <br> 
-Exchanging the sample size of population 1 and 2 increased the error rate to 0.825. 
+Exchanging the sample size of population 1 and 2 increased theType I error rate to 0.825. 
 
 #### (c. 5pts) *Skew, equal sample size*.
 Set the standard deviations of both populations to 1, the means of both populations to 4, and the sample size of both populations to 5. Change the skew of the second population to true (SKEWED2 = TRUE). 
@@ -467,12 +481,12 @@ Based on the above results, I could not find a way to generate a large type I er
 #### (f. 2pts) What does this tell you about the power of your test?
 
 
-Few samples are required in order to maintain the same level of power (be able to correly reject a false null hypothesis) if the means are different. Our test has high power. 
+Few samples are required in order to maintain the same level of power (be able to reject a false null hypothesis) if the means are different. Therefore, our test has high power since 1-B returns a relatively large value. 
 
 
 #### (g. 3pts) Finally, keep the same parameters as in part E, but set the population with mean=15 to be skewed. What happened to your type II error? About how many samples are needed for each group (assume equal sample sizes) to reduce it to 0.2?
 
-The tyep II error dramatically increased when population 2 was set to skewed (0.7). 85 samples were required to return a type II error of 0.19
+The type II error dramatically increased when population 2 was set to skewed (0.7). 85 samples were required to return a type II error of 0.19
 
 
 
